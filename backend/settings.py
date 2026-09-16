@@ -7,9 +7,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 # Security settings
-SECRET_KEY = 'django-insecure-rescue-link-platform-super-secret-key-12345'
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-rescue-link-platform-super-secret-key-12345')
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '*').split(',') if h.strip()]
 
 # Application definition
 INSTALLED_APPS = [
@@ -68,21 +68,29 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 ASGI_APPLICATION = 'backend.asgi.application'
 
 # Database
-# MySQL configuration with environment variables support
+# MySQL / TiDB configuration with environment variables support
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME', 'rescueconnect_db'),
-        'USER': os.environ.get('DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'root'),
-        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
         'PORT': os.environ.get('DB_PORT', '3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },
     }
 }
+
+# TiDB Cloud TLS / SSL support
+# TiDB Cloud Starter requires a secure TLS/SSL connection.
+# When DB_SSL=true or DB_SSL_CA is specified in .env or Render environment:
+if os.environ.get('DB_SSL_CA'):
+    DATABASES['default']['OPTIONS']['ssl'] = {'ca': os.environ.get('DB_SSL_CA')}
+elif os.environ.get('DB_SSL', '').lower() in ('true', '1', 'yes'):
+    DATABASES['default']['OPTIONS']['ssl'] = {}
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -108,12 +116,14 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS configuration
+# CORS & CSRF configuration
 CORS_ALLOW_ALL_ORIGINS = True  # For dev environment simplicity
 CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(',') if origin.strip()]
 
 # Session settings for custom API response
 SESSION_COOKIE_AGE = 86400 * 30  # 30 days

@@ -20,8 +20,8 @@ db.sqlite3-journal
 
 # Environment variables / Secrets
 .env
-.env.local
-.env.production
+.env.*
+!.env.example
 
 # IDE / Editor files
 .vscode/
