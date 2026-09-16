@@ -1,0 +1,68 @@
+# ========================
+# Python / Django .gitignore
+# ========================
+
+# Virtual Environment
+venv/
+env/
+.venv/
+.env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# SQLite Database
+db.sqlite3
+db.sqlite3-journal
+
+# Environment variables / Secrets
+.env
+.env.local
+.env.production
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Django static files (collected)
+staticfiles/
+static_root/
+
+# Django media uploads
+media/
+
+# Logs
+*.log
+
+# Byte-compiled / optimized files
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Batch/Shell scripts (local dev only)
+run_backend.bat
+run_backend.sh
+powershell.cmd
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
